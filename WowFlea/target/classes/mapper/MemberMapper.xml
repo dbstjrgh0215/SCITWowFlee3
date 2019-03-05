@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 게시판 처리 SQL -->
+<mapper namespace="com.scit.wow.dao.MemberMapper">
+	<!-- 회원가입 -->
+	<insert id="insertMember" parameterType="Member">
+	INSERT INTO WOW_MEMBERINFO
+	(ID, PW, NAME, PHONE, EMAIL, MAILADDR, BIRTHDATE)
+	VALUES
+	(#{id}, #{pw}, #{name}, #{phone}, #{email}, #{mailaddr}, #{birthdate})
+	</insert>
+	
+	<!-- 로그인 -->
+	<select id="login" parameterType="Member" resultType="Member">
+	SELECT 
+	ID, PW, NAME, PHONE, EMAIL, BIRTHDATE
+	FROM WOW_MEMBERINFO
+	WHERE ID=#{id}
+	</select>
+	
+	<update id="keepLogin" parameterType="HashMap">
+        update WOW_MEMBERINFO set sessionKey = #{sessionId}, sessionLimit = #{next} where id=#{userId}
+    </update>
+     
+    <!--
+        유효기간이 남아 있으면서 해당 sessionId를 가지는 사용자 정보를 꺼내오는 부분
+     -->
+    <select id="checkUserWithSessionKey" resultType="Member">
+        select * from WOW_MEMBERINFO where sessionKey = #{sessionId} and sessionLimit > sysdate
+    </select>
+
+
+	<!-- 추가정보입력(셀러) -->
+	<insert id="insertExtraInfo" parameterType="ExtraInfo">
+	INSERT INTO WOW_EXTRAINFO
+	(MEMBERNUM, ID, GENDER, TEL, NICKNAME, MEMBERTYPE, ADDRESS1, ADDRESS2, COMMENTS, LICENSENUM)
+	VALUES
+	(MEMBERNUM_SEQ.NEXTVAL, #{id}, #{gender}, #{tel}, #{nickname}, #{membertype}, #{address1}, #{address2}, #{comments}, #{licensenum})
+	</insert>
+	
+	
+</mapper>
